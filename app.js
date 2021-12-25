@@ -1,15 +1,16 @@
 
-
 fetch('https://apis.scrimba.com/jsonplaceholder/posts')
-.then(res=>res.json())
-.then(data => {
-    console.log(data)
-    for (let index = 0; index < data.length; index++) {
-        const p = document.createElement('p')
-        const span = document.createElement('span')
-        span.textContent = index + 1
-        p.textContent =  data[index].title
-        document.body.append(span)
-        document.body.append(p)
-    }
-})
+    .then(res => res.json())
+    .then(data => {
+        const limitData = data.slice(0, 5)
+        console.log(limitData)
+        for (let index = 0; index < limitData.length; index++) {
+            const h3 = document.createElement('h3')
+            const p = document.createElement('p')
+            h3.textContent = limitData[index].title
+            p.textContent = limitData[index].body
+            document.querySelector('#blog-list').append(h3)
+            h3.classList = 'title'
+            document.querySelector('#blog-list').append(p)
+        }
+    })
