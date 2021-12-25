@@ -1,27 +1,29 @@
 
 const postBody = document.getElementById('post-text')
 const postTitle = document.getElementById('post-title')
-const submitForm = document.getElementById('blog-list')
-const blogPost = document.querySelector('#blog-list')
+const postListHtml = document.querySelector('.blog-list')
+const form = document.querySelector('#new-post')
 
 let data = {}
+let postsArray = []
 
-const addPost = (title, body) => {
-    const h3 = document.createElement('h3')
-    h3.textContent = title
-    const p = document.createElement('p')
-    p.textContent = body
-    blogPost.append(h3,p)
+const renderPosts = () => {
+    postListHtml.innerHTML = ''
+    for (let post of postsArray) {
+        postListHtml.innerHTML += `
+        <div className="post">
+            <h3>${post.title}</h3>
+            <p>${post.body}</p>
+        </div><hr/>
+        `
+    }
 }
 
 fetch('https://apis.scrimba.com/jsonplaceholder/posts')
     .then(res => res.json())
     .then(data => {
-        const limitData = data.slice(0, 5)
-        console.log(limitData)
-        for (let index = 0; index < limitData.length; index++) {
-            addPost(limitData[index].title, limitData[index].body)
-        }
+        postsArray = data.slice(0, 5)
+        renderPosts()
     })
 
 const postSubmit = (e) => {
@@ -30,24 +32,27 @@ const postSubmit = (e) => {
         title: postTitle.value,
         body: postBody.value
     }
-    addPost(postTitle.value, postBody.value)
-    postTitle.value = ''
-    postBody.value = ''
-    fetch('https://apis.scrimba.com/jsonplaceholder/posts', {
+    // postTitle.value = ''
+    // postBody.value = ''
+    form.reset()
+
+    const options = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
-    })
-    .then(res => res.json())
-    .then(data=>{
-        console.log(data)
-    })
+        body: JSON.stringify(data)
+    }
+    fetch('https://apis.scrimba.com/jsonplaceholder/posts', options)
+        .then(res => res.json())
+        .then(data => {
+            postsArray.unshift(data)
+            renderPosts()
+        })
 }
 
 
 
 
-submitForm.addEventListener('submit', postSubmit)
+form.addEventListener('submit', postSubmit)
 
